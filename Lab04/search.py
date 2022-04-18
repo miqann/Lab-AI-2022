@@ -17,6 +17,7 @@ def Backtracking_Search(csp):
     """
     "***YOUR CODE HERE ***"
     return Recursive_Backtracking({}, csp)
+    
 
 
 def Recursive_Backtracking(assignment, csp):
@@ -25,16 +26,25 @@ def Recursive_Backtracking(assignment, csp):
     """
     "***YOUR CODE HERE ***"
     if isComplete(assignment):
-        return assignment
-    
-    var = Select_Unassigned_Variables(Variable[csp], assignment, csp)
-    for value in Order_Domain_Values(var, assignment, csp):
+            return assignment
+
+    var = Select_Unassigned_Variables(assignment, csp)
+    domain = deepcopy(csp.values)
+
+    for value in csp.values[var]:
         if isConsistent(var, value, assignment, csp):
-            assignment.add(var = value)
-            result = Recursive_Backtracking(assignment, value)
-            if result != False: return result 
-            assignment.remove(var = value)
-        return False
+            assignment[var] = value
+            inferences = {}
+            inferences = Inference(assignment, inferences, csp, var, value)
+            if inferences!= "FAILURE":
+                result = Recursive_Backtracking(assignment, csp)
+                if result!="FAILURE":
+                    return result
+
+            del assignment[var]
+            csp.values.update(domain)
+
+    return "FAILURE"
     
 def Inference(assignment, inferences, csp, var, value):
     """
